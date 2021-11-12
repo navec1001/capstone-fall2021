@@ -7,15 +7,11 @@ public class StringManip {
     public static void main(String [] args) {
         //setting up a scanner for user inputs
         Scanner input = new Scanner(System.in);
-        //setting up "dictionaries" to compare user input to, note that dict indexes match up between name and purpose
-        List<String>nameDict = Arrays.asList(
-                "Sodium Hyaluronate",
-                "Glycerin",
-                "Citric Acid");
-        List<String>purposeDict = Arrays.asList(
-                "Humectant, helps with hydration",
-                "Another humectant that helps with hydration",
-                "A very light AHA exfoliant that can also contains antioxidants");
+        //setting up a "dictionary" to compare user input to, note that dict indexes match up between name and purpose
+        List<Ingredient>ingDict = new ArrayList<>();
+        ingDict.add(new Ingredient("Sodium Hyaluronate","Humectant that can hold 1000x it's molecular weight in water, greatly helps with hydration"));
+        ingDict.add(new Ingredient("Glycerin","A humectant already present in the skin that helps with hydration, and is less likely to cause irritation"));
+        ingDict.add(new Ingredient("Citric Acid","A very light AHA exfoliant that can also contains antioxidants"));
 
         //getting user input and repeating it back
         System.out.println("Enter a comma-separated list below: \n > ");
@@ -24,31 +20,37 @@ public class StringManip {
         System.out.println(commaInput);
 
         //converting large user input string into a separated list (with no whitespace!)
-        List<String> list = new ArrayList<String>(Arrays.asList(commaInput.split("\\s*,\\s*")));
-        System.out.println("\nBut when it's separated it looks like this: ");
-        for (int i=0; i < list.size(); i++) {
-            System.out.println(list.get(i));
+        List<String> list = new ArrayList<>(Arrays.asList(commaInput.split("\\s*,\\s*")));
+        System.out.println("\nBut when it's separated it looks like this: \n");
+        for (String ing : list) {
+            System.out.println(ing);
         }
 
-        /*comparing user list strings to name dictionary strings
-        Storing matching indexes
-        Using those indexes to output the name dictionary and purpose dictionary information
-        (In the order the matching indexes were found in the first comparison)
-         */
-        System.out.println("\nAnd here's what some of the ingredients do for you: ");
-        List<Integer>indRem = new ArrayList<Integer>();
-        for (int j=0; j < list.size(); j++) {
-            for (int k=0; k < nameDict.size(); k++){
-                if (list.get(j).equals(nameDict.get(k))) {
-                    indRem.add(k);
+        System.out.println();
+
+        List<Ingredient> userList = new ArrayList<>();
+        System.out.println("Let's convert that to a Ingredient:tm: List");
+
+        for (String ing : list) {
+            userList.add(new Ingredient(ing));
+        }
+        System.out.println("And this is what that now looks like: \n");
+        for (Ingredient ing : userList) {
+            System.out.println(ing.getName());
+        }
+
+        System.out.println("\nAnd here's what some of the ingredients do for you: \n");
+
+        for(int i=0; i < userList.size(); i++) {
+            for (int j=0; j < ingDict.size(); j++) {
+                if (userList.get(i).getName().equals(ingDict.get(j).getName())) {
+                    userList.get(i).setDesc(ingDict.get(j).getDesc());
                 }
             }
         }
-        for (int l=0; l < indRem.size(); l++) {
-            System.out.print(nameDict.get(indRem.get(l)));
-            System.out.print(" : ");
-            System.out.print(purposeDict.get(indRem.get(l)));
-            System.out.print("\n");
+
+        for (Ingredient ing : userList) {
+            System.out.println(ing);
         }
     }
 }

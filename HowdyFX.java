@@ -14,6 +14,9 @@ import javafx.stage.Stage;
 public class HowdyFX extends Application {
     public void start(Stage primaryStage) {
 
+        //Importing a Product object
+        Product userProduct = new Product();
+
         //Using a GridPane since that's how my brain works best
         GridPane introPane = new GridPane();
         VBox outputPane = new VBox();
@@ -24,13 +27,8 @@ public class HowdyFX extends Application {
 
         //*********************introPane*******************************
         //Non-setup nodes
+        Label nameLbl = new Label("Enter Product Name: ");
         Label lbl = new Label("Enter Ingredient List");
-
-        //Making the 'Process' Button take you to outputScene
-        Button btProcess = new Button("Process");
-        btProcess.setOnAction((ActionEvent event) -> {
-            primaryStage.setScene(outputScene);
-        });
 
         //Making the 'Quit' Button exit the application
         Button btQuit = new Button("Quit");
@@ -38,17 +36,31 @@ public class HowdyFX extends Application {
             Platform.exit();
         });
 
+        //TextField
+        TextField getName = new TextField();
+        getName.setPromptText("Product name goes here...");
+
         //TextArea node that's a pain in the ass to set up
         TextArea getText = new TextArea();
         getText.setPromptText("Ingredients go here..."); //prompt text for flavor
         getText.setMinSize(250,300);
         getText.setWrapText(true);
 
+        //Making the 'Process' Button take you to outputScene
+        Button btProcess = new Button("Process");
+        btProcess.setOnAction((ActionEvent event) -> {
+            processBtnClick(userProduct, getName.getText(), getText.getText());
+            checkBtnClick(userProduct);
+            primaryStage.setScene(outputScene);
+        });
+
         //Adding nodes to the introPane
-        introPane.add(lbl, 1, 0);
-        introPane.add(getText, 0, 1, 3, 2);
-        introPane.add(btProcess, 0, 3);
-        introPane.add(btQuit, 2, 3);
+        introPane.add(nameLbl, 1,0);
+        introPane.add(getName,0,1, 3, 1);
+        introPane.add(lbl, 1, 2);
+        introPane.add(getText, 0, 3, 3, 2);
+        introPane.add(btProcess, 0, 5);
+        introPane.add(btQuit, 2, 5);
 
         //introPane constraints
         ColumnConstraints col0 = new ColumnConstraints();
@@ -96,5 +108,18 @@ public class HowdyFX extends Application {
 
     public static void main(String [] args) {
         launch(args);
+    }
+
+    public void processBtnClick(Product inProd, String prodName, String prodIng) {
+        inProd.setName(prodName);
+        inProd.importIngList(prodIng);
+    }
+
+    public void checkBtnClick(Product inProd) {
+        System.out.println(inProd.getName());
+        System.out.println();
+        for (Ingredient ing : inProd.getIngList()) {
+            System.out.println(ing);
+        }
     }
 }
