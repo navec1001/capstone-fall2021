@@ -26,29 +26,32 @@ public class StringManip {
             System.out.println(ing);
         }
 
-        System.out.println();
+        System.out.println(); //used for a newline(\n)
 
+        //passes user inputted list to the userList of Ingredients
         List<Ingredient> userList = new ArrayList<>();
         System.out.println("Let's convert that to a Ingredient:tm: List");
-
         for (String ing : list) {
             userList.add(new Ingredient(ing));
         }
+        //and then spits it out for debugging purposes
         System.out.println("And this is what that now looks like: \n");
         for (Ingredient ing : userList) {
             System.out.println(ing.getName());
         }
 
+        //compares the userList Ingredient names to the ingDict Ingredient names
+        //an enhanced for loop didn't work for this :(
         System.out.println("\nAnd here's what some of the ingredients do for you: \n");
-
         for(int i=0; i < userList.size(); i++) {
             for (int j=0; j < ingDict.size(); j++) {
+                //when a match is found, copy the desc from the ingDict Ingredient to the userList Ingredient desc
                 if (userList.get(i).getName().equals(ingDict.get(j).getName())) {
                     userList.get(i).setDesc(ingDict.get(j).getDesc());
                 }
             }
         }
-
+        //and the nspit it all out :)
         for (Ingredient ing : userList) {
             System.out.println(ing);
         }

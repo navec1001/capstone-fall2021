@@ -1,10 +1,13 @@
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -12,6 +15,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class HowdyFX extends Application {
+
+    //Prototyping Observable list so it can be dynamically changed with button press
+    final ObservableList<Ingredient> data = FXCollections.observableArrayList();
+
     public void start(Stage primaryStage) {
 
         //Importing a Product object
@@ -20,6 +27,12 @@ public class HowdyFX extends Application {
         //Using a GridPane since that's how my brain works best
         GridPane introPane = new GridPane();
         VBox outputPane = new VBox();
+
+        //Creating a Table so I can use it in Proceed Button
+        TableView<Ingredient> table = new TableView<>();
+
+        //Prototyping the button, will be dynamically updated with button presses
+        Label outLbl = new Label("");
 
         //Scene setup and execution
         Scene introScene = new Scene(introPane,500, 600);
@@ -49,9 +62,18 @@ public class HowdyFX extends Application {
         //Making the 'Process' Button take you to outputScene
         Button btProcess = new Button("Process");
         btProcess.setOnAction((ActionEvent event) -> {
+            /*button click:
+            puts user entered data into a Product obj
+            checks and prints in console,
+            changes the Stage to the outputStage
+            puts userProduct ingList data into the ObservableList and then into the TableView
+            changes the outLbl on the stage to include the userProduct name
+             */
             processBtnClick(userProduct, getName.getText(), getText.getText());
             checkBtnClick(userProduct);
             primaryStage.setScene(outputScene);
+            addTableData(userProduct, data, table);
+            outLbl.setText("Ingredients for " + userProduct.getName() + ":");
         });
 
         //Adding nodes to the introPane
@@ -70,12 +92,8 @@ public class HowdyFX extends Application {
         col1.setHalignment(HPos.CENTER);
         introPane.getColumnConstraints().addAll(col0, col1);
         //*********************outroPane*******************************
-        //Non-setup nodes
-        Label outLbl = new Label("Ingredients:");
-
         //Setting up a TableView for the output
         //Table background info
-        TableView table = new TableView();
         table.setEditable(true);
         table.setPlaceholder(new Label("Nothing to display"));
 
@@ -83,15 +101,30 @@ public class HowdyFX extends Application {
         TableColumn nameCol = new TableColumn("Ingredient");
         nameCol.setResizable(false);
         nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.3));
+        nameCol.setCellValueFactory(
+                new PropertyValueFactory<Ingredient, String>("name"));
         TableColumn descCol = new TableColumn("Description");
         descCol.setResizable(false);
         descCol.prefWidthProperty().bind(table.widthProperty().multiply(0.7));
+        descCol.setCellValueFactory(
+                new PropertyValueFactory<Ingredient, String>("desc"));
         table.getColumns().addAll(nameCol, descCol);
 
         //Making the 'Return' Button take you back to introScene
         Button btReturn = new Button("Return");
         btReturn.setOnAction((ActionEvent event) -> {
+            /* button click:
+            sets Stage back to the introScene
+            clears the TableView data
+            clears the userProduct name
+            deletes userProduct ingList via making a whole new blank ArrayList
+             */
             primaryStage.setScene(introScene);
+            for (int i=0; i<table.getItems().size(); i++) {
+                table.getItems().clear();
+            }
+            userProduct.setName("");
+            userProduct.deleteIngList();
         });
 
         //Adding nodes to the outputPane
@@ -106,20 +139,30 @@ public class HowdyFX extends Application {
         primaryStage.show();
     }
 
+    //main function just launches JavaFX
     public static void main(String [] args) {
         launch(args);
     }
 
+    //copies user information from the two Strings into the Product variable slots
     public void processBtnClick(Product inProd, String prodName, String prodIng) {
         inProd.setName(prodName);
         inProd.importIngList(prodIng);
     }
 
+    //checks the above function for debugging purposes
     public void checkBtnClick(Product inProd) {
         System.out.println(inProd.getName());
         System.out.println();
         for (Ingredient ing : inProd.getIngList()) {
             System.out.println(ing);
         }
+    }
+
+    //adds all of the information from inProd to the ObservableList data, then plugs in data to the TableView table
+    public void addTableData(Product inProd, ObservableList<Ingredient> data, TableView<Ingredient> table) {
+        inProd.makeDescQuestion();
+        data.addAll(inProd.getIngList());
+        table.setItems(data);
     }
 }

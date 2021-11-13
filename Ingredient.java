@@ -37,6 +37,7 @@ public class Ingredient {
 
     //Other functions
     @Override
+    //making the print/println versions of the Ingredients look nice :)
     public String toString() {
         if (this.desc == null){
             return this.name + " : ???";
