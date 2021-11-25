@@ -16,13 +16,18 @@ import javafx.stage.Stage;
 
 public class HowdyFX extends Application {
 
+    //Creating a Product object to get information from the Database
+    static Product rootData = new Product();
+    //Importing the class so I can use the one function it has
+    static JavaSQL sqlStuff = new JavaSQL();
+
+    //Creating a Product object for user use
+    Product userProduct = new Product();
+
     //Prototyping Observable list so it can be dynamically changed with button press
     final ObservableList<Ingredient> data = FXCollections.observableArrayList();
 
     public void start(Stage primaryStage) {
-
-        //Importing a Product object
-        Product userProduct = new Product();
 
         //Using a GridPane since that's how my brain works best
         GridPane introPane = new GridPane();
@@ -70,7 +75,8 @@ public class HowdyFX extends Application {
             changes the outLbl on the stage to include the userProduct name
              */
             processBtnClick(userProduct, getName.getText(), getText.getText());
-            checkBtnClick(userProduct);
+            //checkBtnClick(userProduct);
+            compareLists(userProduct, rootData);
             primaryStage.setScene(outputScene);
             addTableData(userProduct, data, table);
             outLbl.setText("Ingredients for " + userProduct.getName() + ":");
@@ -141,6 +147,7 @@ public class HowdyFX extends Application {
 
     //main function just launches JavaFX
     public static void main(String [] args) {
+        sqlStuff.preLoadDatabase(rootData);
         launch(args);
     }
 
@@ -164,5 +171,16 @@ public class HowdyFX extends Application {
         inProd.makeDescQuestion();
         data.addAll(inProd.getIngList());
         table.setItems(data);
+    }
+
+    public void compareLists(Product user, Product master) {
+        for(int i=0; i < user.getIngList().size(); i++) {
+            for (int j=0; j < master.getIngList().size(); j++) {
+                //when a match is found, copy the desc from the ingDict Ingredient to the userList Ingredient desc
+                if (user.getIngList().get(i).getName().equals(master.getIngList().get(j).getName())) {
+                    user.getIngList().get(i).setDesc(master.getIngList().get(j).getDesc());
+                }
+            }
+        }
     }
 }

@@ -6,6 +6,13 @@ public class Product {
     private String name = "";
     private List<Ingredient> ingList = new ArrayList<>();
 
+    //Constructors
+    public Product() {}
+
+    public Product(String name) {
+        this.name = name;
+    }
+
     //getters and setters
     public String getName() {
         return name;
@@ -54,7 +61,8 @@ public class Product {
     //iterates on ingList and makes all the Ingredient desc ???
     public void makeDescQuestion() {
         for (Ingredient ing : ingList) {
-            ing.setDesc("???");
+            if(ing.getDesc() == null)
+                ing.setDesc("???");
         }
     }
 }
