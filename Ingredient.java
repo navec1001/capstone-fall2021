@@ -1,3 +1,5 @@
+package capstone;
+
 public class Ingredient {
     private String name = null;
     private String desc = null;

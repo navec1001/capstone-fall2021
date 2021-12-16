@@ -1,3 +1,5 @@
+package capstone;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -27,6 +29,7 @@ public class HowdyFX extends Application {
     //Prototyping Observable list so it can be dynamically changed with button press
     final ObservableList<Ingredient> data = FXCollections.observableArrayList();
 
+    @Override
     public void start(Stage primaryStage) {
 
         //Using a GridPane since that's how my brain works best
@@ -45,7 +48,7 @@ public class HowdyFX extends Application {
 
         //*********************introPane*******************************
         //Non-setup nodes
-        Label nameLbl = new Label("Enter Product Name: ");
+        Label nameLbl = new Label("Enter or Select Product Name: ");
         Label lbl = new Label("Enter Ingredient List");
 
         //Making the 'Quit' Button exit the application
@@ -54,15 +57,25 @@ public class HowdyFX extends Application {
             Platform.exit();
         });
 
-        //TextField
-        TextField getName = new TextField();
-        getName.setPromptText("Product name goes here...");
-
-        //TextArea node that's a pain in the ass to set up
+        //TextArea node that's a pain to set up
         TextArea getText = new TextArea();
         getText.setPromptText("Ingredients go here..."); //prompt text for flavor
         getText.setMinSize(250,300);
         getText.setWrapText(true);
+
+        //ComboBox to select product or enter a new one
+        ComboBox getName = new ComboBox();
+        getName.setEditable(true);
+        getName.setItems(sqlStuff.loadProducts());
+        getName.setPromptText("Product name..."); //prompt text for flavor
+        getName.setOnAction((event) -> {
+            /*when one of the items are selected:
+            fill the TextArea with the product's ingredient list from the database
+             */
+            if (!sqlStuff.isNewProduct((String) getName.getValue())) {
+                getText.setText(sqlStuff.getProductIng((String )getName.getValue()));
+            }
+        });
 
         //Making the 'Process' Button take you to outputScene
         Button btProcess = new Button("Process");
@@ -74,7 +87,7 @@ public class HowdyFX extends Application {
             puts userProduct ingList data into the ObservableList and then into the TableView
             changes the outLbl on the stage to include the userProduct name
              */
-            processBtnClick(userProduct, getName.getText(), getText.getText());
+            processBtnClick(userProduct, (String) getName.getValue(), getText.getText());
             //checkBtnClick(userProduct);
             compareLists(userProduct, rootData);
             primaryStage.setScene(outputScene);
@@ -82,12 +95,29 @@ public class HowdyFX extends Application {
             outLbl.setText("Ingredients for " + userProduct.getName() + ":");
         });
 
+        //Making the 'Add' Button to add the Product+Ingredients to the database
+        Button btAdd = new Button("Add");
+        btAdd.setOnAction((ActionEvent event) -> {
+            /*button click:
+            checks to see if the name of the product already exists in the database
+                uses method in JavaSQL class to check for this
+            if it is a new product (true) then adds the new product
+            also changes the ComboBox selections to the new ones, including the new product
+             */
+            if (sqlStuff.isNewProduct((String) getName.getValue())) {
+                sqlStuff.addProduct((String) getName.getValue(), getText.getText());
+                getName.setItems(null);
+                getName.setItems(sqlStuff.loadProducts());
+            }
+        });
+
         //Adding nodes to the introPane
         introPane.add(nameLbl, 1,0);
-        introPane.add(getName,0,1, 3, 1);
+        introPane.add(getName,1,1);
         introPane.add(lbl, 1, 2);
         introPane.add(getText, 0, 3, 3, 2);
-        introPane.add(btProcess, 0, 5);
+        introPane.add(btAdd, 0, 5);
+        introPane.add(btProcess, 1, 5);
         introPane.add(btQuit, 2, 5);
 
         //introPane constraints
@@ -145,8 +175,15 @@ public class HowdyFX extends Application {
         primaryStage.show();
     }
 
+    //to be used when a user exits the program with the "X" in the top bar
+    @Override
+    public void stop() {
+        sqlStuff.closeConnection();
+    }
+
     //main function just launches JavaFX
     public static void main(String [] args) {
+        sqlStuff.establishConnection();
         sqlStuff.preLoadDatabase(rootData);
         launch(args);
     }
@@ -173,6 +210,7 @@ public class HowdyFX extends Application {
         table.setItems(data);
     }
 
+    //compares the ingredients list of the user's product to the ingredient list of the master product
     public void compareLists(Product user, Product master) {
         for(int i=0; i < user.getIngList().size(); i++) {
             for (int j=0; j < master.getIngList().size(); j++) {
