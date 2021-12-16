@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 25, 2021 at 05:34 AM
+-- Generation Time: Dec 16, 2021 at 07:21 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.3.31
 
@@ -43,7 +43,9 @@ INSERT INTO `ingredients` (`Name`, `Description`) VALUES
 ('Sodium Acetylated Hyaluronate', 'A form of Hyaluronic Acid, which is an incredibly strong humectant that can hold 1000x its molecular weight in water'),
 ('Sodium Hyaluronate', 'A form of Hyaluronic Acid, which is an incredibly strong humectant that can hold 1000x its molecular weight in water'),
 ('Glycerine', 'A form of Glycerin, a humectant that mimics the skin\'s Natural Moisturizing Factor, making it suitable for all ages and skin types'),
-('Glycerol', 'A form of Glycerin, a humectant that mimics the skin\'s Natural Moisturizing Factor, making it suitable for all ages and skin types');
+('Glycerol', 'A form of Glycerin, a humectant that mimics the skin\'s Natural Moisturizing Factor, making it suitable for all ages and skin types'),
+('Citric Acid', 'A light AHA used primarily for adjusting the pH of products, though in high enough concentrations can be gentle exfoliator'),
+('Niacinamide', 'a.k.a. Vitamin B3, this do-it-all ingredient is perfect for sensitive skin and performs a number of functions in the skin, including: fighting premature aging, repairing a damaged skin barrier, treating acne, and brightening the skin');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
